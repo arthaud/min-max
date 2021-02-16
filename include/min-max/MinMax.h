@@ -37,7 +37,7 @@ public:
 
   /**
    * Return your score.
-   * Return `std::numeric_limits<Score>::max()` if you win
+   * Return `std::numeric_limits<Score>::max()` if you won.
    * Return `std::numeric_limits<Score>::min()` if you lost.
    */
   virtual Score score() const = 0;
@@ -45,7 +45,7 @@ public:
   /* Return all possible valid moves for the current turn. */
   virtual std::vector< std::pair< Move, Derived > > moves() const = 0;
 
-  /* Return who's turn it is. */
+  /* Return whose turn it is. */
   Player turn() const { return turn_; }
 
   Player next_turn() const { return turn_ == You ? Them : You; }
