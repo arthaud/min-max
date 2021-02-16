@@ -32,7 +32,7 @@ public:
 
   virtual ~State() = default;
 
-  /* Return true if the game ended, someone won. */
+  /* Return true if the game ended, a player won or its a draw. */
   virtual bool is_terminal() const = 0;
 
   /**
@@ -79,9 +79,17 @@ public:
       State state, unsigned depth, ScoreT alpha, ScoreT beta, bool is_you) {
     if (depth == 0 || state.is_terminal()) {
       return {std::nullopt, state.score()};
-    } else if (is_you) {
+    }
+
+    auto moves = state.moves();
+    if (moves.empty()) {
+      // In theory, `is_terminal()` should be true.
+      return {std::nullopt, state.score()};
+    }
+
+    if (is_you) {
       Solution solution = {std::nullopt, std::numeric_limits< ScoreT >::min()};
-      for (auto&& [move, new_state] : state.moves()) {
+      for (auto&& [move, new_state] : moves) {
         auto new_solution = min_max(std::move(new_state),
                                     depth - 1,
                                     alpha,
@@ -101,7 +109,7 @@ public:
       return solution;
     } else {
       Solution solution = {std::nullopt, std::numeric_limits< ScoreT >::max()};
-      for (auto&& [move, new_state] : state.moves()) {
+      for (auto&& [move, new_state] : moves) {
         auto new_solution = min_max(std::move(new_state),
                                     depth - 1,
                                     alpha,
