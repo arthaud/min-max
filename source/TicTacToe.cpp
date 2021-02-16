@@ -48,7 +48,19 @@ private:
   }
 
 public:
-  bool is_terminal() const override { return winner_ != min_max::Empty; }
+  bool is_terminal() const override {
+    if (winner_ != min_max::Empty) {
+      return true;
+    }
+    for (int x = 0; x <= 2; x++) {
+      for (int y = 0; y <= 2; y++) {
+        if (grid_[x][y] == min_max::Empty) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
   int score() const override {
     switch (winner_) {
@@ -131,6 +143,7 @@ int main() {
   std::cout << "You are player X, the bot is O.\n";
   TicTacToeState state;
   while (!state.is_terminal()) {
+    // Player turn.
     std::cout << state << "\n";
     std::cout << "Your move (row, column) : " << std::flush;
     int x = 0, y = 0;
@@ -142,23 +155,22 @@ int main() {
       continue;
     }
     state = *new_state;
+
+    if (state.is_terminal()) {
+      break;
+    }
+
+    // AI turn.
     std::cout << "Computing AI move...\n";
     std::optional< Move > move;
     for (int depth = 1; depth <= 10; depth++) {
       auto solution = TicTacToeMinMax::min_max(state, depth);
-      std::cout << "Depth " << depth << ": ";
-      if (!solution.move) {
-        std::cout << "AI has lost\n";
-      } else {
-        std::cout << "best move (" << solution.move->first << ", "
-                  << solution.move->second << ")\n";
-        move = *solution.move;
-      }
+      assert(solution.move);
+      std::cout << "Depth " << depth << ": best move (" << solution.move->first
+                << ", " << solution.move->second << ")\n";
+      move = *solution.move;
     }
-    if (!move) {
-      std::cout << "AI has given up, gg you win!" << std::endl;
-      return 0;
-    }
+    assert(move);
     new_state = state.play(*move);
     if (!new_state) {
       std::cout << "AI move is invalid!" << std::endl;
@@ -168,9 +180,12 @@ int main() {
   }
   if (state.winner() == min_max::You) {
     std::cout << "You won, gg!" << std::endl;
-  } else {
+  } else if (state.winner() == min_max::Them) {
     std::cout << state << "\n";
     std::cout << "You lost, gg!" << std::endl;
+  } else {
+    std::cout << state << "\n";
+    std::cout << "This is a draw :(" << std::endl;
   }
   return 0;
 }
