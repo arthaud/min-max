@@ -143,12 +143,23 @@ int main() {
     }
     state = *new_state;
     std::cout << "Computing AI move...\n";
-    auto solution = TicTacToeMinMax::min_max(state, 5);
-    if (!solution.move) {
-      std::cout << "Could not find a move for the AI!" << std::endl;
-      return 1;
+    std::optional< Move > move;
+    for (int depth = 1; depth <= 10; depth++) {
+      auto solution = TicTacToeMinMax::min_max(state, depth);
+      std::cout << "Depth " << depth << ": ";
+      if (!solution.move) {
+        std::cout << "AI has lost\n";
+      } else {
+        std::cout << "best move (" << solution.move->first << ", "
+                  << solution.move->second << ")\n";
+        move = *solution.move;
+      }
     }
-    new_state = state.play(*solution.move);
+    if (!move) {
+      std::cout << "AI has given up, gg you win!" << std::endl;
+      return 0;
+    }
+    new_state = state.play(*move);
     if (!new_state) {
       std::cout << "AI move is invalid!" << std::endl;
       return 1;
