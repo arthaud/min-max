@@ -29,19 +29,23 @@ private:
   Player compute_winner() const {
     for (int i = 0; i <= 2; i++) {
       // All rows
-      if (grid_[i][0] == grid_[i][1] && grid_[i][1] == grid_[i][2]) {
+      if (grid_[i][0] == grid_[i][1] && grid_[i][1] == grid_[i][2] &&
+          grid_[i][0] != min_max::Empty) {
         return grid_[i][0];
       }
       // All columns
-      if (grid_[0][i] == grid_[1][i] && grid_[1][i] == grid_[2][i]) {
+      if (grid_[0][i] == grid_[1][i] && grid_[1][i] == grid_[2][i] &&
+          grid_[0][i] != min_max::Empty) {
         return grid_[0][i];
       }
     }
     // Diagonal
-    if (grid_[0][0] == grid_[1][1] && grid_[1][1] == grid_[2][2]) {
+    if (grid_[0][0] == grid_[1][1] && grid_[1][1] == grid_[2][2] &&
+        grid_[1][1] != min_max::Empty) {
       return grid_[1][1];
     }
-    if (grid_[2][0] == grid_[1][1] && grid_[1][1] == grid_[0][2]) {
+    if (grid_[2][0] == grid_[1][1] && grid_[1][1] == grid_[0][2] &&
+        grid_[1][1] != min_max::Empty) {
       return grid_[1][1];
     }
     return min_max::Empty;
